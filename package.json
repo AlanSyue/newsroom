@@ -35,6 +35,7 @@
     "version": "rimraf package-lock.json && git add -A"
   },
   "dependencies": {
+    "axios": "^0.21.1",
     "babel-runtime": "^6.26.0",
     "chalk": "^2.4.1",
     "cheerio": "^1.0.0-rc.2",
@@ -50,6 +51,7 @@
     "ora": "^3.0.0",
     "sane": "^2.5.1",
     "thenify": "^3.3.0",
+    "unfluff": "^3.2.0",
     "update-notifier": "^2.5.0"
   },
   "devDependencies": {

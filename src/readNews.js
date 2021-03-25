@@ -1,9 +1,10 @@
 const thenify = require('thenify');
-const open = require('open');
 const inquirer = require('inquirer');
 const feed = thenify(require('feed-read-parser'));
 const cheerio = require('cheerio');
 const ora = require('ora');
+const axios = require('axios');
+const extractor = require('unfluff');
 
 const { getTitleQuestion } = require('./questions');
 
@@ -22,6 +23,19 @@ const getCommonPrefixIndex = (articles, maxCommonPrefixLength = 80) => {
   }, maxCommonPrefixLength);
 
   return commonPrefixIndex;
+};
+
+const showhNewsContent = async (title, feedUrl) => {
+  await axios
+    .get(feedUrl)
+    .then(response => {
+      const content = extractor(response.data);
+      console.log('\x1b[32m', `\n title: ${title}\n`);
+      console.log('\x1b[36m', `${content.text}\n`);
+    })
+    .catch(error => {
+      console.log(error);
+    });
 };
 
 module.exports = async (sourceInfo, pageSize = 10) => {
@@ -73,9 +87,13 @@ module.exports = async (sourceInfo, pageSize = 10) => {
     ]);
   }
 
-  titleAnswer.title.forEach(title => {
-    open(articleMap[title]);
-  });
-
+  const titleList = titleAnswer.title;
+  const feedsResult = [];
+  for (let i = 0; i < titleList.length; i += 1) {
+    const title = titleList[i];
+    const feedUrl = articleMap[title];
+    feedsResult.push(showhNewsContent(title, feedUrl));
+  }
+  await Promise.all(feedsResult);
   return true;
 };
